@@ -475,8 +475,6 @@ func (gp *GenericPool) createPool() error {
 	if err != nil {
 		return err
 	}
-	env := fission.K8sEnvVars(gp.env.Spec.Runtime.Env)
-	log.Printf("Env: %v", env)
 
 	// Use long terminationGracePeriodSeconds for connection draining in case that
 	// pod still runs user functions.
@@ -561,7 +559,7 @@ func (gp *GenericPool) createPool() error {
 									},
 								},
 							},
-							Env: env,
+							Env: gp.env.Spec.Runtime.Env,
 						},
 						{
 							Name:                   "fetcher",
