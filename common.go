@@ -23,6 +23,9 @@ import (
 	"os/signal"
 	"runtime/debug"
 	"syscall"
+
+	"github.com/imdario/mergo"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 func UrlForFunction(name string) string {
@@ -51,4 +54,19 @@ func IsNetworkError(err error) bool {
 // GetFunctionIstioServiceName return service name of function for istio feature
 func GetFunctionIstioServiceName(fnName, fnNamespace string) string {
 	return fmt.Sprintf("istio-%v-%v", fnName, fnNamespace)
+}
+
+func MergeContainerSpecs(specs ...*apiv1.Container) apiv1.Container {
+	result := &apiv1.Container{}
+	for _, spec := range specs {
+		if spec == nil {
+			continue
+		}
+
+		err := mergo.Merge(result, spec)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return *result
 }
